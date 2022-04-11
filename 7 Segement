@@ -1,0 +1,66 @@
+int val0 = 0;
+int val1 = 0;
+int val2 = 0;
+int val3 = 0;
+
+void setup() 
+{
+  //7 seg display
+  for(int i = 5; i < 12; i++){
+    pinMode(i, OUTPUT);
+  }
+
+  //dip switches
+  for(int i = 1; i < 5; i++){
+    pinMode(i, INPUT);
+  }
+
+}
+
+void loop() 
+{
+  val0 = digitalRead(1);
+  val1 = digitalRead(2);
+  
+  clear();
+  if (val0 == LOW  && val1 ==LOW) {
+    dis0 ();
+  }
+   if(val0 == HIGH && val1 == LOW) {
+    dis1 ();
+   }
+   if (val0 == LOW && val1 == HIGH){
+    dis2 ();
+  }
+}
+
+void clear() {
+  for(int i = 5; i <12; i++) {
+    digitalWrite(i, LOW);
+  }
+}
+
+
+void dis0() {
+ 
+  digitalWrite(5, HIGH);
+  digitalWrite(6, HIGH);
+  digitalWrite(7, HIGH);
+  digitalWrite(8, HIGH);
+  digitalWrite(9, HIGH);
+  digitalWrite(10, HIGH);
+
+}
+void dis1() {
+  
+  digitalWrite(6, HIGH);
+  digitalWrite(7, HIGH);
+}
+
+void dis2() {
+  digitalWrite(5, HIGH);
+  digitalWrite(6, HIGH);
+  digitalWrite(8, HIGH);
+  digitalWrite(9, HIGH);
+  digitalWrite(11, HIGH);
+}
