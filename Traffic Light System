@@ -1,0 +1,33 @@
+/*
+ * Traffic Lights.cpp
+ *
+ * Created: 8/1/2021 1:27:16 AM
+ * Author : alfre
+ */ 
+#define F_CPU 16000000L
+
+
+
+#include <avr/io.h>                        /* Defines pins, ports, etc */
+#include <util/delay.h>                     /* Functions to waste time */
+
+#define DELAYTIME 5000                                    /* milliseconds */
+
+int main(void) {
+	uint8_t i=0;
+	DDRB =0b11111111;              /* Data Direction Register B: all on */
+
+	while (1) {
+
+		while (i < 8) {
+			PORTB = (1 << i);                    /* illuminate only i'th pin */
+			_delay_ms(DELAYTIME);                                    /* wait */
+			i = i + 1;                               /* move to the next LED */
+		}
+
+		
+		
+	}
+
+	return 0;
+}
