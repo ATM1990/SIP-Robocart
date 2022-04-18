@@ -1,0 +1,203 @@
+/*
+****************************
+* Robot Car Basic Functions*
+*************************** 
+ */
+
+/*
+ * Alfred Lay 
+ * Date: 4/10/2022
+ * Class: RBT-347 Robot Navigation
+ * Professor: Kim Kendra
+ * Assignment: Creating Our Robot
+ */
+
+ #include <IRremote.h> //Header File for the IR Receiver
+
+ //Define different pins for use
+ #define STBY 3 //Stanby Pin
+ #define ENA 5 //PWM A Pin
+ #define ENB 6 //PWM B Pin
+ #define IN1 8 //Motor set A Pin
+ #define IN2 7 //Motor set B Pin
+
+ const int IR_PIN = 9; //Pin used for IR receiver
+
+ IRrecv ir_recv = IR_PIN; //set an IR receiver and call it this name
+ decode_results results;//The results of decoding the hex values of the remote
+ 
+  
+void setup() {
+  // put your setup code here, to run once:
+
+  // Serial Monitor 9600 Baud
+  Serial.begin(9600);
+  ir_recv.enableIRIn(); //enables the IR receiver
+
+  // sets the pins to outputs
+  pinMode(STBY, OUTPUT);
+  pinMode(ENA,OUTPUT);
+  pinMode(ENB, OUTPUT);
+  pinMode(IN1, OUTPUT); 
+  pinMode(IN2, OUTPUT);
+
+}
+
+
+
+void forward() //move forward
+{
+  analogWrite(ENA, 125);
+  analogWrite(ENB, 125);
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, HIGH);
+  digitalWrite(STBY, HIGH);
+   
+}
+
+void reverse() //move backwards
+{
+  analogWrite(ENA, 125);
+  analogWrite(ENB, 125);
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, LOW);
+  digitalWrite(STBY, HIGH);
+}
+
+void pivot_right() //spin to the right
+{
+  analogWrite(ENA, 62);
+  analogWrite(ENB, 62);
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
+  digitalWrite(STBY, HIGH);
+}
+
+void pivot_left() //
+{
+  analogWrite(ENA, 62);
+  analogWrite(ENB, 62);
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, HIGH);
+  digitalWrite(STBY, HIGH);
+}
+
+void turn_right_forward() //turn right while moving forward
+{
+  analogWrite(ENA, 62);
+  analogWrite(ENB, 125);
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, HIGH);
+  digitalWrite(STBY, HIGH);
+}
+
+void turn_left_forward() //turn left while moving forward
+{
+  analogWrite(ENA, 125);
+  analogWrite(ENB, 62);
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, HIGH);
+  digitalWrite(STBY, HIGH);
+}
+
+void turn_left_reverse() //turn left while moving forward
+  {
+  analogWrite(ENA, 125);
+  analogWrite(ENB, 62);
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, LOW);
+  digitalWrite(STBY, HIGH);
+  
+}
+void turn_right_reverse() //turn right while moving backwards
+{
+  analogWrite(ENA, 62);
+  analogWrite(ENB, 125);
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, LOW);
+  digitalWrite(STBY, HIGH);
+}
+
+void stop_robot() //stop the robot
+{
+  analogWrite(ENA, 0);
+  analogWrite(ENB, 0);
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, HIGH);
+  digitalWrite(STBY, LOW);
+}
+
+void ir_mode() //the function that moves the robot using a remote
+{
+  if (ir_recv.decode(&results))
+  {
+    
+    if (results.value == 0xFF9867)
+    {
+   
+      forward();
+    }
+
+    if (results.value == 0xFF38C7)
+    {
+     
+      reverse();
+    }
+
+    if (results.value == 0xFF30CF)
+    {
+ 
+      pivot_left();
+    }
+    if (results.value == 0xFF7A85)
+    {
+     
+      pivot_right();
+    }
+    if (results.value == 0xFF6897)
+    {
+     
+     turn_left_forward();
+    }
+
+    if ( results.value == 0xFF10EF)
+      {
+       
+      turn_left_reverse();
+    }
+
+    if (results.value == 0xFFB04F)
+    {
+     
+     turn_right_forward();
+    }
+
+    if (results.value == 0xFF5AA5)
+     {
+      
+     turn_right_reverse();
+    }
+
+   if (results.value == 0xFF18E7)
+   {
+      
+     stop_robot();
+    }
+
+    delay(50);
+    ir_recv.resume();
+    
+   }
+  }
+
+
+void loop() {
+  // main function
+  //This code get the button presses to the serial monitor
+  if (ir_recv.decode(&results))
+  {
+    Serial.println(results.value, HEX);
+    ir_recv.resume();
+  }
+  ir_mode(); // this is the function that controls the robot
+}
