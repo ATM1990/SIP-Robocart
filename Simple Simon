@@ -1,0 +1,116 @@
+int LEDPins[4] = {6,7,8,9};
+int buttonPins[4] = {2,3,4,5};
+int LEDSequence[32];
+
+void setup() 
+{
+  Serial.begin(9600);
+  for(int i = 0; i<4; i++) {
+    pinMode(LEDPins[i], OUTPUT);
+    pinMode(buttonPins[i], INPUT);
+  }
+  //set randomizer
+ randomSeed(analogRead(A0));
+}
+//check for debounce (from movie)
+bool isPressed(int buttonNum){
+  bool pressed = false;
+  if(digitalRead(buttonPins[buttonNum]) == HIGH) {
+    delay(10);
+    while(digitalRead(buttonPins[buttonNum]) == HIGH) {}
+      delay(10);
+      pressed = true;
+  }
+  return pressed;
+}
+//detect which button pressed (from movie)
+int buttonPressed() 
+{
+   int buttonNum = -1;
+  for(int i=0; i<4; i++) 
+  {
+     if(isPressed(i) == true) {
+      buttonNum = i;
+     }
+    }
+    return buttonNum;
+}
+//sequence for loss
+void loseSeq() {
+  for(int i = 0; i < 4; i++){
+    digitalWrite(LEDPins[i], HIGH);
+  }
+  delay(1000);
+  for(int i = 0; i < 4; i++){
+    digitalWrite(LEDPins[i], LOW);
+    delay(1000);
+  }
+}
+//winSeq plays when user wins
+void winSeq() {
+  for(int i = 0; i < 3; i++) {
+    for(int i = 0; i < 4; i++) {
+      digitalWrite(LEDPins[i], HIGH);
+    }
+      delay(500);
+      for(int i = 0; i <4; i++) {
+      digitalWrite(LEDPins[i], LOW);
+      }
+      delay(500);
+  }
+}
+
+
+void loop() {
+
+  bool lose = false;
+  
+  //create random sequence of lights
+  for(int i = 0; i < 32; i++) {
+    LEDSequence[i] = random(4);
+    
+    Serial.println (LEDSequence[i]);
+    delay(250);
+  }
+
+  
+//game starts here...
+//level loop
+for(int level = 0; level < 32; level++) {
+  
+  //show loop
+  for(int i = 0; i < level; i++) {
+    digitalWrite(LEDPins[LEDSequence[i]], HIGH);
+    delay(750);
+    digitalWrite(LEDPins[LEDSequence[i]], LOW);
+    delay(750);
+  }
+
+ 
+  //response loop
+  for(int i = 0; i < level; i++) {
+    int button = -1;
+     while (button < 0) {
+      button = buttonPressed();
+    }
+   digitalWrite(LEDPins[button], HIGH);
+   delay(250);
+    digitalWrite(LEDPins[button], LOW);
+   delay(250);
+
+    if (LEDSequence[i] !=button) {
+      lose = true;
+      break;
+    }
+  }
+//win or loss loop
+  if(lose == true) {
+    loseSeq();
+    break;
+  } else if (lose ==false && level == 31) {
+    winSeq();
+  }
+  
+ }
+  
+}
