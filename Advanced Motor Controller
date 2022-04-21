@@ -1,0 +1,40 @@
+#define encoderIn 2
+#define motorForward 3
+#define motorReverse 4
+
+volatile long encoderValue = 0;
+  
+void setup()
+{
+  Serial.begin(9600);
+  
+  pinMode(motorForward, OUTPUT);
+  pinMode(motorReverse, OUTPUT);
+  pinMode(encoderIn, INPUT_PULLUP);
+  
+  attachInterrupt(digitalPinToInterrupt(encoderIn), updateEncoder, RISING);  
+  Serial.println("Here we go!");
+  encoderValue = 0;
+                  
+ }
+                  
+ void loop()
+ {
+   Serial.println(encoderValue);
+   encoderValue = 0;
+   digitalWrite(motorReverse, LOW);
+   digitalWrite(motorForward, HIGH);
+   delay(5000);//Wait for 5000 millisecond(s)
+   Serial.println(encoderValue);
+   encoderValue = 0;
+   digitalWrite(motorForward, LOW);
+   digitalWrite(motorReverse, HIGH);
+   delay(5000);
+   
+ }
+ 
+ void updateEncoder()
+ {
+   // Increment value for each pulse from encoder
+   encoderValue++;
+ } 
